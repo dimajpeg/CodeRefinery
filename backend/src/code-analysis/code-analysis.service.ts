@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Linter } from 'eslint';
-// Этот импорт теперь будет работать правильно благодаря esModuleInterop
-import escomplex from 'escomplex';
 
 @Injectable()
 export class CodeAnalysisService {
@@ -9,6 +7,7 @@ export class CodeAnalysisService {
   private readonly logger = new Logger(CodeAnalysisService.name);
 
   analyzeCode(code: string) {
+    this.logger.log(`Analyzing code with ESLint (length: ${code.length})`);
     const lintMessages = this.linter.verify(code, {
       languageOptions: {
         ecmaVersion: 'latest',
@@ -20,14 +19,19 @@ export class CodeAnalysisService {
         'prefer-const': 'error',
       },
     });
+    this.logger.log(`ESLint analysis complete. Found ${lintMessages.length} messages.`);
 
     try {
-      // И теперь этот вызов тоже будет работать
-      const report = escomplex.analyze(code);
+      this.logger.log('Attempting to analyze complexity with escomplex...');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const escomplex = require('escomplex');
+      
+      // ВЫЗЫВАЕМ ПРАВИЛЬНЫЙ МЕТОД 'analyse' (с буквой 's')
+      const report = escomplex.analyse(code); 
+      this.logger.log('Escomplex analysis successful!');
 
       return {
         lintMessages,
-        // И TypeScript не будет ругаться, так как он сможет подхватить наши типы
         complexity: {
           operands: report.aggregate.halstead.operands.total,
           operators: report.aggregate.halstead.operators.total,
@@ -38,12 +42,11 @@ export class CodeAnalysisService {
         },
       };
     } catch (e) {
-      this.logger.error('Failed to analyze code complexity', e);
-
+      this.logger.error('Error during escomplex analysis:', e);
       return {
         lintMessages,
         complexity: null,
-        error: 'Could not analyze code complexity. Possible syntax error.',
+        error: 'Could not analyze code complexity. Check server logs.',
       };
     }
   }

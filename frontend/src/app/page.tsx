@@ -1,12 +1,11 @@
-'use client'; // Эта директива ОБЯЗАТЕЛЬНА для компонентов, использующих хуки (useState, useEffect)
+'use client'; 
 
 import { useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
 
-// Типизируем результат, который мы ожидаем от бэкенда
 interface AnalysisResult {
-  lintMessages: any[]; // Для простоты оставим any
+  lintMessages: any[]; 
   complexity: {
     operands: number;
     operators: number;
