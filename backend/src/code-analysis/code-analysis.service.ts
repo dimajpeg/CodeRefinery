@@ -4,19 +4,15 @@ import { analyze, Report } from 'escomplex';
 
 @Injectable()
 export class CodeAnalysisService {
-  // Инициализируем Linter прямо здесь. Конструктор нам даже не нужен.
   private readonly linter = new Linter();
   private readonly logger = new Logger(CodeAnalysisService.name);
 
   analyzeCode(code: string) {
-    // Вызываем verify с кодом и конфигурацией. Этого достаточно.
     const lintMessages = this.linter.verify(code, {
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
       },
-      // ВАЖНО: Мы можем использовать эти правила, потому что они встроены в ESLint.
-      // Linter знает о них по умолчанию.
       rules: {
         'no-console': 'warn',
         'no-var': 'error',
