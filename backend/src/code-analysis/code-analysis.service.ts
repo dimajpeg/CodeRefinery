@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Linter } from 'eslint';
-import { analyze, Report } from 'escomplex';
+// Этот импорт теперь будет работать правильно благодаря esModuleInterop
+import escomplex from 'escomplex';
 
 @Injectable()
 export class CodeAnalysisService {
@@ -9,7 +10,7 @@ export class CodeAnalysisService {
 
   analyzeCode(code: string) {
     const lintMessages = this.linter.verify(code, {
-      parserOptions: {
+      languageOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
       },
@@ -21,10 +22,12 @@ export class CodeAnalysisService {
     });
 
     try {
-      const report: Report = analyze(code);
+      // И теперь этот вызов тоже будет работать
+      const report = escomplex.analyze(code);
 
       return {
         lintMessages,
+        // И TypeScript не будет ругаться, так как он сможет подхватить наши типы
         complexity: {
           operands: report.aggregate.halstead.operands.total,
           operators: report.aggregate.halstead.operators.total,
